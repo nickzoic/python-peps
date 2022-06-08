@@ -1,0 +1,97 @@
+PEP: 9999
+Title: System Requirements for Python Packages 
+Author: Nick Moore <nick@zoic.org>
+Status: Draft
+Type: Standards Track
+Content-Type: text/x-rst
+Created: 08-Jun-2022
+Python-Version: 3.11
+Requires: 518
+Discussions-To: https://discuss.python.org/c/packaging
+Post-History:
+
+.. highlight:: rst
+
+Abstract
+========
+
+Many Python packages start their README.md with a declaration of 
+which system packages are required on various platforms and distributions.
+This information is helpful but not easily machine readable.
+
+This PEP adds to the `pyproject.toml` file introduced by :pep:`518`,
+including per distribution lists of system packages in a machine readable
+format.
+
+Rationale
+=========
+
+List some popular packages with this issue
+
+This could be used to replace / enhance system package decisions made by:
+
+* `pyinstaller <https://pyinstaller.org>`__ hooks
+* `briefcase <https://beeware.org/briefcase/>`__ 
+
+
+Specification
+=============
+
+Additional keys in the `pyproject.toml` file
+
+::
+    platform.$SYSTEM.$DISTRIBUTION.package.$TOOL.$LEVEL.$PACKAGE = $VERSION_SPECIFIER
+
+Various tools can then read this information and issue the appropriate
+system commands to install these packages before moving on to compiling / installing
+the python packages themselves.
+
+Example
+=======
+
+::
+    [platform.linux.ubuntu]
+    release = ">= 18.04"
+
+    [platform.linux.ubuntu.package.apt.requires]
+    libjpeg = ">1.0"
+    zlib = true
+
+    [platform.linux.ubuntu.package.apt.recommends]
+    libfreetype = ">=2.2"
+    openjpeg = "*"
+
+Backwards Compatibility
+=======================
+
+Packages with no declarations of this type in their pyproject.toml, or no pyproject.toml
+at all, will be assumed to not have any further requirements.
+
+Security Implications
+=====================
+
+A person subverting a python package could add the name of a subverted system library
+to this list, thus causing the subverted system library to get installed on systems
+where permissions allow, or perhaps less attention is paid to, installing python
+libraries than system libraries.
+
+How To Teach This
+=================
+
+Reference Implementation
+========================
+
+Rejected Ideas
+==============
+
+Open Issues
+===========
+
+Footnotes
+=========
+
+Copyright
+=========
+
+This document is placed in the public domain or under the
+CC0-1.0-Universal license, whichever is more permissive.
